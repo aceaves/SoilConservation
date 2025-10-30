@@ -1,8 +1,9 @@
 {UTF-8}
 Intervention Land= INTEG (
-	IF THEN ELSE( Treated Land <= INI TREATED LAND, IF THEN ELSE(INTERVENE START=0,0,INI SLIP LAND\
-		+planting rate-Intervention Land), 0),
-		0)
+	SMOOTH3( IF THEN ELSE( Treated Land<=INI SLIP LAND, IF THEN ELSE( Treated Land <= INI TREATED LAND\
+		, IF THEN ELSE(INTERVENE START=1,-planting rate-Treated Land-Intervention Land-INI SLIP LAND\
+		, 0), 0), 0), 3),
+		INI SLIP LAND)
 	~	ha
 	~	MIN( MAX( IF THEN ELSE((Time <= INTERVENE START),0,(-treated land - planting rate)), \
 		0),INI SLIP LAND)
@@ -101,7 +102,7 @@ INI STOCK UNITS[LUC]=
 
 Treated Land= INTEG (
 	IF THEN ELSE( INTERVENE START=1, (SUM(retired land[LUC!])+Intervention Land)*INTERVENE START\
-		-Treated Land, 0),
+		/100, 0),
 		INI TREATED LAND)
 	~	
 	~		|
@@ -869,7 +870,7 @@ INITIAL TIME  = 0
 	|
 
 SAVEPER  = 
-        TIME STEP
+        TIME STEP 
 	~	Year [0,?]
 	~	The frequency with which output is stored.
 	|
@@ -1064,7 +1065,7 @@ $-1--1--1,0,Arial Narrow|14||0-0-0|-1--1--1|0-64-0|-1--1--1|-1--1--1|96,96,73,2
 1,135,132,110,1,0,0,0,0,192,0,-1--1--1,,1|(1410,1028)|
 10,136,TIME STEP,1221,1012,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,137,136,105,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,138,INI TREATED LAND,1428,369,43,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,138,INI TREATED LAND,1505,473,43,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 10,139,tree loss rate,978,654,54,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 10,140,end of life tree replacements,959,725,59,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 10,141,INI CATCHMENT AREA,1067,233,71,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
@@ -1153,7 +1154,7 @@ $-1--1--1,0,Arial Narrow|14||0-0-0|-1--1--1|0-64-0|-1--1--1|-1--1--1|96,96,73,2
 1,224,15,218,1,0,0,0,0,64,0,-1--1--1,,1|(1295,580)|
 1,225,8,151,1,0,0,0,0,192,0,-1--1--1,,1|(1140,546)|
 1,226,218,15,1,0,0,0,0,192,0,-1--1--1,,1|(1434,572)|
-1,227,138,15,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,227,138,15,1,0,0,0,0,64,0,-1--1--1,,1|(1473,615)|
 \\\---/// Sketch information - do not modify anything except names
 V300  Do not put anything below this section - it will be ignored
 *Rates
@@ -1269,7 +1270,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 :L<%^E!@
 1:Current Simulation.vdfx
 4:Time
-5:Treated Land
+5:Intervention Land
 6:AhuririLagoon Tributaries
 6:Aropaoanui
 6:Baseline
