@@ -1,0 +1,46 @@
+LOOKUP_BOUNDS:Lookup out of bounds at 0         Below -FRAGILITY LOOKUP- computing -damage ratio-.    
+ACTIVE_INITIAL:Differences found.  Use Options>Setting to control reporting.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip likelihood- : Initial = 0.199198, Active = 0.813563.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesStatusQuo,AhuririLagoonTributaries]- : Initial = 40.2379, Active = 164.34.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesStatusQuo,Mangakuri]- : Initial = 141.032, Active = 576.002.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesStatusQuo,RegionalTotal]- : Initial = 18115.6, Active = 73987.8.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesStatusQuo,Tahaenui]- : Initial = 145.613, Active = 594.714.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesBestPractice,AhuririLagoonTributaries]- : Initial = 40.2379, Active = 164.34.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesBestPractice,Mangakuri]- : Initial = 141.032, Active = 576.002.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesBestPractice,RegionalTotal]- : Initial = 18115.6, Active = 73987.8.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[PolesBestPractice,Tahaenui]- : Initial = 145.613, Active = 594.714.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Baseline,AhuririLagoonTributaries]- : Initial = 40.2379, Active = 164.34.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Baseline,Mangakuri]- : Initial = 141.032, Active = 576.002.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Baseline,RegionalTotal]- : Initial = 18115.6, Active = 73987.8.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Baseline,Tahaenui]- : Initial = 145.613, Active = 594.714.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Native,AhuririLagoonTributaries]- : Initial = 40.2379, Active = 164.34.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Native,Mangakuri]- : Initial = 141.032, Active = 576.002.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Native,RegionalTotal]- : Initial = 18115.6, Active = 73987.8.    
+ACTIVE_INITIAL:Active/initial calculation difference for -slip prone land[Native,Tahaenui]- : Initial = 145.613, Active = 594.714.    
+LOOKUP_BOUNDS:Lookup out of bounds at 6.5       In    -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 6.75      Below -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 11        In    -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 11.25     Below -FRAGILITY LOOKUP- computing -damage ratio-.    
+DATA WARNING:Simulating beyond range for exogenous variable - INIPASTORALFARMLAND[RegionalTotal] - at time 19.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND01] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND02] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND03] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND04] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND05] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND06] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND07] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND08] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND09] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INI RDP[IND10] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INICARRYINGCAPACITY[CLASS3] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INICARRYINGCAPACITY[CLASS4] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INICARRYINGCAPACITY[CLASS5] - at time 23.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INIPASTORALFARMLAND[AhuririLagoonTributaries] - at time 24.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INIPASTORALFARMLAND[Mangakuri] - at time 24.25.    
+DATA WARNING:Simulating beyond range for exogenous variable - INIPASTORALFARMLAND[Tahaenui] - at time 24.25.    
+LOOKUP_BOUNDS:Lookup out of bounds at 25.25     In    -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 25.5      Below -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 33        In    -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 33.25     Below -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 41.5      In    -FRAGILITY LOOKUP- computing -damage ratio-.    
+LOOKUP_BOUNDS:Lookup out of bounds at 41.75     Below -FRAGILITY LOOKUP- computing -damage ratio-.    
