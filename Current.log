@@ -1,0 +1,12 @@
+INFO:        Initial point of search.
+INFO:          Constant = 400.
+INFO:        Simulations = 1.
+INFO:        Pass = 0.
+INFO:        Payoff = -255723.
+INFO:        ---------------------------------.
+INFO:        Maximum payoff found at:.
+INFO:         *Constant = -3.40282e+38.
+INFO:        Simulations = 10.
+INFO:        Pass = 3.
+INFO:        Payoff = 2.32247e+41.
+INFO:        ---------------------------------.

@@ -1,0 +1,31 @@
+The total payoff is	2.92787e+23
+   Policy elements	2.92787e+23
+   Calibration elements	0
+   Prior elements	0
+
+The following are the components of the payoff:
+Type	Component	Contribution	Percent	Values	Params&Data	Used	Skipped
+*P	adjusted gross margin[PolesStatusQuo,RegionalTotal]/1	-1.98978e+40	NA	-1.98978e+40	0	201	0
+*P	adjusted gross margin[PolesBestPractice,RegionalTotal]/1	1.98978e+40	NA	1.98978e+40	0	201	0
+*P	adjusted gross margin[PolesBestPractice,Mangakuri]/1	5.50899e+37	NA	5.50899e+37	0	201	0
+*P	adjusted gross margin[PolesStatusQuo,Mangakuri]/1	-5.50899e+37	NA	-5.50899e+37	0	201	0
+*P	adjusted gross margin[Baseline,RegionalTotal]/1	1.67586e+06	NA	1.67586e+06	0	201	0
+*P	adjusted gross margin[Baseline,Mangakuri]/1	22566.7	NA	22566.7	0	201	0
+*P	adjusted gross margin[Baseline,AhuririLagoonTributaries]/1	11386.4	NA	11386.4	0	201	0
+*P	adjusted gross margin[PolesStatusQuo,AhuririLagoonTributaries]/1	11297.9	NA	11297.9	0	201	0
+*P	adjusted gross margin[PolesBestPractice,AhuririLagoonTributaries]/1	11251.2	NA	11251.2	0	201	0
+*P	adjusted gross margin[Baseline,Tahaenui]/1	8361.13	NA	8361.13	0	201	0
+*P	adjusted gross margin[PolesStatusQuo,Tahaenui]/1	8173.87	NA	8173.87	0	201	0
+*P	adjusted gross margin[PolesBestPractice,Tahaenui]/1	8060.79	NA	8060.79	0	201	0
+
+Sources for exogenous variables
+INICARRYINGCAPACITY[CLASS3]	BaseData.xls.vdfx
+INICARRYINGCAPACITY[CLASS4]	BaseData.xls.vdfx
+INICARRYINGCAPACITY[CLASS5]	BaseData.xls.vdfx
+INIPASTORALFARMLAND[AhuririLagoonTributaries]	BaseData.xls.vdfx
+INIPASTORALFARMLAND[Mangakuri]	BaseData.xls.vdfx
+INIPASTORALFARMLAND[RegionalTotal]	BaseData.xls.vdfx
+INIPASTORALFARMLAND[Tahaenui]	BaseData.xls.vdfx
+POPULATION[DReg1]	BaseData.xls.vdfx
+POPULATION[DReg2]	BaseData.xls.vdfx
+STOCK UNIT PRICE	BaseData.xls.vdfx
