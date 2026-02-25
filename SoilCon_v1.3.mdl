@@ -1,4 +1,226 @@
 {UTF-8}
+Planted Land[Intervention,Catchment]= INTEG (+ planting rt[Intervention,Catchment],
+		0)
+	~	ha
+	~		|
+
+slip rate[Baseline,Catchment]=soil weight conversion[Baseline,Catchment]-Slip Erosion\
+		[Baseline,Catchment] ~~|
+slip rate[PolesConventional,Catchment]=IF THEN ELSE(INTERVENE START=0, 
+	soil weight conversion[PolesConventional,Catchment]-Slip Erosion[PolesConventional,Catchment\
+		] ,
+	(soil weight conversion[PolesConventional,Catchment]-soil weight conversion[PolesConventional\
+		,Catchment]
+	*(tree reduction[PolesConventional,Catchment]/100)-Slip Erosion[PolesConventional,Catchment\
+		])) ~~|
+slip rate[PolesBestPractice,Catchment]=IF THEN ELSE(INTERVENE START=0, 
+	soil weight conversion[PolesBestPractice,Catchment]-Slip Erosion[PolesBestPractice,Catchment\
+		] ,
+	(soil weight conversion[PolesBestPractice,Catchment]-soil weight conversion[PolesBestPractice\
+		,Catchment]*(tree reduction[PolesBestPractice,Catchment]
+	/100)-Slip Erosion[PolesBestPractice,Catchment]))
+	~	t/yr
+	~		|
+
+planting rt[PolesConventional,Catchment]=IF THEN ELSE ( INTERVENE START=0 , 
+	INI PLANTING RT[Catchment]+Deaths[PolesBestPractice,Catchment]+end of life replacements\
+		[PolesBestPractice,Catchment], 
+	SMOOTH ( IF THEN ELSE ( stock revenue[PolesConventional,Catchment]>Treatment cost[PolesConventional
+	,Catchment] , 
+	IF THEN ELSE ( Delta Stock Revenue[PolesConventional,Catchment]>0 ,
+	IF THEN ELSE(Planted Land
+	[PolesConventional,Catchment] < (INI SLIP LAND[Catchment]-retired land[PolesConventional\
+		,Catchment]), 
+	INI PLANTING RT[Catchment]+Deaths[PolesConventional,Catchment]+end of life replacements\
+		[PolesConventional,Catchment], 
+	0), 
+	0), 
+	0), 
+	8)) ~~|
+planting rt[PolesBestPractice,Catchment]=IF THEN ELSE ( INTERVENE START=0 , 
+	INI PLANTING RT[Catchment]+Deaths[PolesBestPractice,Catchment]+end of life replacements\
+		[PolesBestPractice,Catchment], 
+	SMOOTH ( IF THEN ELSE ( stock revenue[PolesConventional,Catchment]>Treatment cost[PolesConventional\
+		,Catchment] , 
+	IF THEN ELSE ( Delta Stock Revenue[PolesConventional,Catchment]>0 ,
+	IF THEN ELSE(Planted Land
+	[PolesConventional,Catchment] < (INI SLIP LAND[Catchment]-retired land[PolesConventional\
+		,Catchment]), 
+	INI PLANTING RT[Catchment]+Deaths[PolesConventional,Catchment]+end of life replacements\
+		[PolesConventional,Catchment], 
+	0), 
+	0), 
+	0), 
+	2)) ~~|
+planting rt[Baseline,Catchment]=IF THEN ELSE ( PROGRAMME STOP=1 , IF THEN ELSE(Planted Land
+	[PolesBestPractice,Catchment] < (INI SLIP LAND[Catchment]-retired land[Baseline,Catchment\
+		]), (INI PLANTING RT[Catchment
+	]+Deaths[PolesBestPractice,Catchment]+end of life replacements[PolesBestPractice,Catchment\
+		])*PROGRAMME STOP, 0), 0)
+	~	ha/yr
+	~	Aim for 900 ha per year (from initial conversation).
+		2024-25 = 600 ha
+		2025-26 = 800 ha
+		2026-27 = 900 ha
+	|
+
+LAND RETIRE SHARE[PolesConventional,Catchment]=5 ~~|
+LAND RETIRE SHARE[Baseline,Catchment]=0 ~~|
+LAND RETIRE SHARE[PolesBestPractice,Catchment]=5
+	~	pcnt
+	~		|
+
+soil weight conversion[Intervention,Catchment]=slip prone land[Intervention,Catchment\
+		]*CONSTANT*SOIL BULK DENSITY
+	~	t/yr
+	~	From MWLR Report:
+		The extent of severe damage was large, ranging from the Gisborne district, through \
+		Hawke’s Bay, and down to the Wairarapa. The total number of landslides, \
+		each typically comprising a thousand tonnes of soil, was over 300,000. \
+		This proliferation of landsliding has removed productive soil from farms \
+		and deposited sediment on floodplains. The total mass of landslides is \
+		estimated at 300 million tonnes, with an economic cost of approximately \
+		$1.5 billion (conservatively estimated at $5 per tonne of eroded soil).
+		
+		Give or take 120,000 landslides in HB at 1000 t, then aim for 120M t.
+	|
+
+annual soil loss[Baseline,Catchment]=SMOOTH3 (slip prone land[Baseline,Catchment]*TIME STEP\
+		, 3) ~~|
+annual soil loss[PolesConventional,Catchment]=SMOOTH3 (slip prone land[PolesConventional\
+		,Catchment]*TIME STEP, 3) ~~|
+annual soil loss[PolesBestPractice,Catchment]=SMOOTH3 (slip prone land[PolesBestPractice\
+		,Catchment]*TIME STEP, 3)
+	~	ha/yr
+	~		|
+
+Treated Land[PolesConventional,Catchment]= INTEG (INI TREATED LAND[Catchment]+Planted Land\
+		[PolesConventional,Catchment]+retired land[PolesConventional,Catchment]-Treated Land\
+		[PolesConventional,Catchment],
+		0) ~~|
+Treated Land[Baseline,Catchment]= INTEG (IF THEN ELSE ( INTERVENE START=0 , INI TREATED LAND\
+		[Catchment]+Planted Land[PolesConventional,Catchment]+retired land[PolesConventional\
+		,Catchment]-Treated Land[Baseline,Catchment], 0 ),
+		0) ~~|
+Treated Land[PolesBestPractice,Catchment]= INTEG (INI TREATED LAND[Catchment]+Planted Land\
+		[PolesBestPractice,Catchment]+retired land[PolesBestPractice,Catchment]-Treated Land\
+		[PolesBestPractice,Catchment],
+		0)
+	~	ha
+	~		|
+
+Treatment cost[Intervention,Catchment]= INTEG (treatment rate[Intervention,Catchment]\
+		,
+		0)
+	~	$M
+	~	 $2500/ha
+	|
+
+Slip Erosion[Intervention,Catchment]= INTEG (slip rate[Intervention,Catchment]/TIME STEP\
+		,
+		0)
+	~	t/yr
+	~	On average, an estimated 7.2 million tonnes of soil across Hawke’s Bay \
+		are currently lost through erosion processes each year. Regionally, \
+		landslide is the predominant cause of erosion, transporting about 5 \
+		million tonnes of fine sediment into waterways in Hawke’s Bay each year \
+		- SOE Report 2018-21
+	|
+
+tree reduction[Baseline,Catchment]=IF THEN ELSE ( INTERVENE START=0 , Pole Reduction*\
+		(1-LAND RETIRE SHARE[Baseline,Catchment])+Native Reduction*LAND RETIRE SHARE[Baseline\
+		,Catchment] , 0 ) ~~|
+tree reduction[PolesConventional,Catchment]=Pole Reduction*(1-LAND RETIRE SHARE[PolesConventional\
+		,Catchment])+Native Reduction*LAND RETIRE SHARE[PolesConventional,Catchment] ~~|
+tree reduction[PolesBestPractice,Catchment]=Pole Reduction*(1-LAND RETIRE SHARE[PolesBestPractice\
+		,Catchment])+Native Reduction*LAND RETIRE SHARE[PolesBestPractice,Catchment]
+	~	pcnt
+	~		|
+
+treatment rate[Baseline,Catchment]=(pole cost[Catchment]*POLE DENSITY*planting rt[Baseline\
+		,Catchment])*PROGRAMME STOP ~~|
+treatment rate[PolesConventional,Catchment]=pole cost[Catchment]*POLE DENSITY*planting rt\
+		[PolesConventional,Catchment]+natives cost[Catchment]*retired land[PolesConventional\
+		,Catchment]+fencing[PolesConventional,Catchment] ~~|
+treatment rate[PolesBestPractice,Catchment]=pole cost[Catchment]*POLE DENSITY*planting rt\
+		[PolesBestPractice,Catchment]+natives cost[Catchment]*retired land[PolesBestPractice\
+		,Catchment]+fencing[PolesBestPractice,Catchment]
+	~	$M/yr
+	~		|
+
+land delta[Baseline,Catchment]=- annual soil loss[Baseline,Catchment] ~~|
+land delta[PolesConventional,Catchment]=IF THEN ELSE ( INTERVENE START = 1 , - annual soil loss\
+		[PolesConventional,Catchment] *
+	  (Treated Land[PolesConventional,Catchment]/INI SLIP LAND[Catchment]) , - annual soil loss\
+		[PolesConventional,Catchment] 
+	) ~~|
+land delta[PolesBestPractice,Catchment]=IF THEN ELSE ( INTERVENE START = 1 , - annual soil loss\
+		[PolesBestPractice,Catchment] *
+	  (Treated Land[PolesBestPractice,Catchment]/INI SLIP LAND[Catchment]) , - annual soil loss\
+		[PolesBestPractice,Catchment] 
+	)
+	~	ha/yr
+	~	LAND RETIREMENT SHARE*RETIRE DELAY START*Tot Baseline Land*RETIRE DELAY STOP
+		
+		(Tot Baseline Land/TIME STEP)-slip prone land[Baseline]-diverse rt
+	|
+
+slip prone land[Baseline,Catchment]=IF THEN ELSE ( INTERVENE START=0 , MAX ( (INI SLIP LAND\
+		[Catchment]-Planted Land[Baseline,Catchment])*slip likelihood, 0) , MAX ( (INI SLIP LAND\
+		[Catchment]-Planted Land[Baseline,Catchment])*slip likelihood, 0) ) ~~|
+slip prone land[PolesConventional,Catchment]=MAX ( (INI SLIP LAND[Catchment]-Planted Land\
+		[PolesConventional,Catchment
+	]-retired land[PolesConventional,Catchment])*slip likelihood, 0) ~~|
+slip prone land[PolesBestPractice,Catchment]=MAX ( (INI SLIP LAND[Catchment]-Planted Land\
+		[PolesBestPractice,Catchment
+	]-retired land[PolesBestPractice,Catchment])*slip likelihood, 0)
+	~	ha/yr
+	~		|
+
+Tot Land[Intervention,Catchment]= INTEG (land delta[Intervention,Catchment],
+		INIPASTORALFARMLAND[Catchment])
+	~	ha
+	~		|
+
+Deaths[Intervention,Catchment]= INTEG (SMOOTH3( REPLACEMENT RATIO*planting rt[Intervention\
+		,Catchment], 5)-Deaths[Intervention,Catchment],
+		0)
+	~	ha
+	~		|
+
+retired land[PolesConventional,Catchment]=SMOOTH3 ( IF THEN ELSE(INTERVENE START=1, INI SLIP LAND\
+		[Catchment]*(LAND RETIRE SHARE[PolesConventional,Catchment]/100), 0), 3) ~~|
+retired land[Baseline,Catchment]=0 ~~|
+retired land[PolesBestPractice,Catchment]=SMOOTH3 ( IF THEN ELSE(INTERVENE START=1, INI SLIP LAND\
+		[Catchment]*(LAND RETIRE SHARE[PolesBestPractice,Catchment]/100), 0), 3)
+	~	ha
+	~		|
+
+fencing[Intervention,Catchment]=(COMPACTNESS * BLOCK SIZE * SQRT(retired land[Intervention\
+		,Catchment]))*DEER FENCING COST*Price Index
+	~	$M
+	~	The geometry rule of thumb (perimeter-only)
+		
+		If a planting area is roughly compact (square-ish / blob), fence length scales like:
+		
+		Square block:
+		
+		Concrete examples (perimeter fencing only):
+		
+		1 ha →  400 m total → 400 m/ha
+		
+		4 ha →  800 m total → 200 m/ha
+		
+		10 ha →  1,265 m total → 126 m/ha
+		
+		25 ha →  2,000 m total → 80 m/ha
+		
+		100 ha →  4,000 m total → 40 m/ha
+		
+		That shows the key point: bigger blocks need fewer metres of fence per \
+		hectare.
+	|
+
 RCP=0.006
 	~	Dmnl
 	~	RCP0=0, RCP26=0.005, RCP45=0.006, RCP6=0.007 RCP85=0.0075
@@ -22,62 +244,6 @@ ICE MELT=0.0011
 thermal expansion=Storm Prob*ICE MELT
 	~	m
 	~	Positive loop to generate SLR
-	|
-
-tree reduction[Baseline,Catchment]=IF THEN ELSE ( INTERVENE START=0 , Pole Reduction*\
-		(1-LAND RETIRE SHARE[PolesStatusQuo
-	])+Native Reduction*LAND RETIRE SHARE[PolesStatusQuo] , 0 ) ~~|
-tree reduction[PolesStatusQuo,Catchment]=Pole Reduction*(1-LAND RETIRE SHARE[PolesStatusQuo\
-		])+Native Reduction*LAND RETIRE SHARE
-	[PolesStatusQuo] ~~|
-tree reduction[PolesBestPractice,Catchment]=Pole Reduction*(1-LAND RETIRE SHARE[PolesBestPractice\
-		])+Native Reduction*LAND RETIRE SHARE
-	[PolesBestPractice]
-	~	pcnt
-	~		|
-
-slip rate[Baseline,Catchment]=soil weight conversion[Baseline,Catchment]-Slip Erosion\
-		[Baseline,Catchment] ~~|
-slip rate[PolesStatusQuo,Catchment]=IF THEN ELSE(INTERVENE START=0, 
-	soil weight conversion[PolesStatusQuo,Catchment]-Slip Erosion[PolesStatusQuo,Catchment\
-		] ,
-	(soil weight conversion[PolesStatusQuo,Catchment]-soil weight conversion[PolesStatusQuo\
-		,Catchment]
-	*(tree reduction[PolesStatusQuo,Catchment]/100)-Slip Erosion[PolesStatusQuo,Catchment\
-		])) ~~|
-slip rate[PolesBestPractice,Catchment]=IF THEN ELSE(INTERVENE START=0, 
-	soil weight conversion[PolesBestPractice,Catchment]-Slip Erosion[PolesBestPractice,Catchment\
-		] ,
-	(soil weight conversion[PolesBestPractice,Catchment]-soil weight conversion[PolesBestPractice\
-		,Catchment]*(tree reduction[PolesBestPractice,Catchment]
-	/100)-Slip Erosion[PolesBestPractice,Catchment]))
-	~	t/yr
-	~		|
-
-soil weight conversion[Intervention,Catchment]=slip prone land[Intervention,Catchment\
-		]*CONSTANT*SOIL BULK DENSITY
-	~	t/yr
-	~	From MWLR Report:
-		The extent of severe damage was large, ranging from the Gisborne district, through \
-		Hawke’s Bay, and down to the Wairarapa. The total number of landslides, \
-		each typically comprising a thousand tonnes of soil, was over 300,000. \
-		This proliferation of landsliding has removed productive soil from farms \
-		and deposited sediment on floodplains. The total mass of landslides is \
-		estimated at 300 million tonnes, with an economic cost of approximately \
-		$1.5 billion (conservatively estimated at $5 per tonne of eroded soil).
-		
-		Give or take 120,000 landslides in HB at 1000 t, then aim for 120M t.
-	|
-
-Slip Erosion[Intervention,Catchment]= INTEG (slip rate[Intervention,Catchment]/TIME STEP\
-		,
-		0)
-	~	t/yr
-	~	On average, an estimated 7.2 million tonnes of soil across Hawke’s Bay \
-		are currently lost through erosion processes each year. Regionally, \
-		landslide is the predominant cause of erosion, transporting about 5 \
-		million tonnes of fine sediment into waterways in Hawke’s Bay each year \
-		- SOE Report 2018-21
 	|
 
 REMOVAL[Intervention,Catchment]=1.6e-05
@@ -131,52 +297,10 @@ STOCK UNIT PRICE:INTERPOLATE::=GET XLS DATA('?basedata', 'STOCKUNITPRICE' , '1' 
 		p-beef-farm-survey
 	|
 
-planting rt[PolesStatusQuo,Catchment]=IF THEN ELSE ( INTERVENE START=0 , 
-	INI PLANTING RT[Catchment]+Deaths[PolesBestPractice,Catchment]+end of life replacements\
-		[PolesBestPractice,Catchment], 
-	SMOOTH ( IF THEN ELSE ( stock revenue[PolesStatusQuo,Catchment]>Treatment cost[PolesStatusQuo
-	,Catchment] , 
-	IF THEN ELSE ( Delta Stock Revenue[PolesStatusQuo,Catchment]>0 ,
-	IF THEN ELSE(Planted Land
-	[PolesStatusQuo,Catchment] < (INI SLIP LAND[Catchment]-retired land[PolesStatusQuo,Catchment\
-		]), 
-	INI PLANTING RT[Catchment]+Deaths[PolesStatusQuo,Catchment]+end of life replacements\
-		[PolesStatusQuo,Catchment], 
-	0), 
-	0), 
-	0), 
-	6)) ~~|
-planting rt[PolesBestPractice,Catchment]=IF THEN ELSE ( INTERVENE START=0 , 
-	INI PLANTING RT[Catchment]+Deaths[PolesBestPractice,Catchment]+end of life replacements\
-		[PolesBestPractice,Catchment], 
-	SMOOTH ( IF THEN ELSE ( stock revenue[PolesStatusQuo,Catchment]>Treatment cost[PolesStatusQuo\
-		,Catchment] , 
-	IF THEN ELSE ( Delta Stock Revenue[PolesStatusQuo,Catchment]>0 ,
-	IF THEN ELSE(Planted Land
-	[PolesStatusQuo,Catchment] < (INI SLIP LAND[Catchment]-retired land[PolesBestPractice\
-		,Catchment]), 
-	INI PLANTING RT[Catchment]+Deaths[PolesStatusQuo,Catchment]+end of life replacements\
-		[PolesStatusQuo,Catchment], 
-	0), 
-	0), 
-	0), 
-	2)) ~~|
-planting rt[Baseline,Catchment]=IF THEN ELSE ( PROGRAMME STOP=1 , IF THEN ELSE(Planted Land
-	[PolesBestPractice,Catchment] < (INI SLIP LAND[Catchment]-retired land[Baseline,Catchment\
-		]), (INI PLANTING RT[Catchment
-	]+Deaths[PolesBestPractice,Catchment]+end of life replacements[PolesBestPractice,Catchment\
-		])*PROGRAMME STOP, 0), 0)
-	~	ha/yr
-	~	Aim for 900 ha per year (from initial conversation).
-		2024-25 = 600 ha
-		2025-26 = 800 ha
-		2026-27 = 900 ha
-	|
-
 adjusted gross margin[Baseline,Catchment]=stock revenue[Baseline,Catchment]-total cost\
 		[Baseline,Catchment] ~~|
-adjusted gross margin[PolesStatusQuo,Catchment]=stock revenue[PolesStatusQuo,Catchment\
-		]-total cost[PolesStatusQuo,Catchment] ~~|
+adjusted gross margin[PolesConventional,Catchment]=stock revenue[PolesConventional,Catchment\
+		]-total cost[PolesConventional,Catchment] ~~|
 adjusted gross margin[PolesBestPractice,Catchment]=stock revenue[PolesBestPractice,Catchment\
 		]-total cost[PolesBestPractice,Catchment]
 	~	$M
@@ -186,54 +310,9 @@ stock revenue[Intervention,Catchment]=total stock units[Intervention,Catchment]*
 	~	$M/yr
 	~		|
 
-retired land[PolesStatusQuo,Catchment]=SMOOTH3 ( IF THEN ELSE(INTERVENE START=1, INI SLIP LAND\
-		[Catchment]*(LAND RETIRE SHARE[PolesStatusQuo]/100), 0), 3) ~~|
-retired land[Baseline,Catchment]=0 ~~|
-retired land[PolesBestPractice,Catchment]=SMOOTH3 ( IF THEN ELSE(INTERVENE START=1, INI SLIP LAND\
-		[Catchment]*(LAND RETIRE SHARE[PolesBestPractice]/100), 0), 3)
-	~	ha
-	~		|
-
-land delta[Baseline,Catchment]=- annual soil loss[Baseline,Catchment] ~~|
-land delta[PolesStatusQuo,Catchment]=IF THEN ELSE ( INTERVENE START = 1 , - annual soil loss\
-		[PolesStatusQuo,Catchment] *
-	  (Treated Land[PolesStatusQuo,Catchment]/INI SLIP LAND[Catchment]) , - annual soil loss\
-		[PolesStatusQuo,Catchment] 
-	) ~~|
-land delta[PolesBestPractice,Catchment]=IF THEN ELSE ( INTERVENE START = 1 , - annual soil loss\
-		[PolesBestPractice,Catchment
-	] * (Treated Land[PolesBestPractice,Catchment]/INI SLIP LAND[Catchment]) , - annual soil loss\
-		[PolesBestPractice,Catchment] )
-	~	ha/yr
-	~	LAND RETIREMENT SHARE*RETIRE DELAY START*Tot Baseline Land*RETIRE DELAY STOP
-		
-		(Tot Baseline Land/TIME STEP)-slip prone land[Baseline]-diverse rt
-	|
-
-LAND RETIRE SHARE[PolesStatusQuo]=5 ~~|
-LAND RETIRE SHARE[Baseline]=0 ~~|
-LAND RETIRE SHARE[PolesBestPractice]=5
-	~	pcnt
-	~		|
-
-Treated Land[PolesStatusQuo,Catchment]= INTEG (INI TREATED LAND[Catchment]+Planted Land\
-		[PolesStatusQuo,Catchment]+retired land
-	[PolesStatusQuo,Catchment]-Treated Land[PolesStatusQuo,Catchment],
-		0) ~~|
-Treated Land[Baseline,Catchment]= INTEG (IF THEN ELSE ( INTERVENE START=0 , INI TREATED LAND\
-		[Catchment]+Planted Land[PolesStatusQuo,Catchment]+retired land
-	[PolesStatusQuo,Catchment]-Treated Land[Baseline,Catchment], 0 ),
-		0) ~~|
-Treated Land[PolesBestPractice,Catchment]= INTEG (INI TREATED LAND[Catchment]+Planted Land\
-		[PolesBestPractice,Catchment]+retired land
-	[PolesBestPractice,Catchment]-Treated Land[PolesBestPractice,Catchment],
-		0)
-	~	ha
-	~		|
-
-Erosion Reduction[PolesStatusQuo,Catchment]= INTEG (IF THEN ELSE( Slip Erosion[Baseline\
+Erosion Reduction[PolesConventional,Catchment]= INTEG (IF THEN ELSE( Slip Erosion[Baseline\
 		,Catchment]=0, 0,(Slip Erosion
-	[PolesStatusQuo,Catchment]-Slip Erosion[Baseline,Catchment])/Slip Erosion[PolesStatusQuo\
+	[PolesConventional,Catchment]-Slip Erosion[Baseline,Catchment])/Slip Erosion[PolesConventional\
 		,Catchment]),
 		0) ~~|
 Erosion Reduction[Baseline,Catchment]= INTEG (Slip Erosion[Baseline,Catchment]-Slip Erosion\
@@ -247,18 +326,15 @@ Erosion Reduction[PolesBestPractice,Catchment]= INTEG (IF THEN ELSE( Slip Erosio
 	~	pcnt
 	~		|
 
-Sediment Reduction[PolesStatusQuo,Catchment]= INTEG (IF THEN ELSE( Sediment Deposition\
+Sediment Reduction[PolesConventional,Catchment]= INTEG (IF THEN ELSE( Sediment Deposition\
 		[Baseline,Catchment
-	]=0, 0,(Sediment Deposition[PolesStatusQuo,Catchment]-Sediment Deposition[Baseline,Catchment\
-		])/Sediment Deposition[PolesStatusQuo
-	,Catchment])
-	,
+	]=0, 0,(Sediment Deposition[PolesConventional,Catchment]-Sediment Deposition[Baseline\
+		,Catchment])/Sediment Deposition[PolesConventional,Catchment]),
 		0) ~~|
 Sediment Reduction[PolesBestPractice,Catchment]= INTEG (IF THEN ELSE( Sediment Deposition\
 		[Baseline,Catchment
 	]=0, 0,(Sediment Deposition[PolesBestPractice,Catchment]-Sediment Deposition[Baseline\
-		,Catchment])/Sediment Deposition[PolesBestPractice,Catchment])
-	,
+		,Catchment])/Sediment Deposition[PolesBestPractice,Catchment]),
 		0) ~~|
 Sediment Reduction[Baseline,Catchment]= INTEG (Sediment Deposition[Baseline,Catchment\
 		]-Sediment Deposition
@@ -299,31 +375,6 @@ INI INFLATION=1.02
 	~	pcnt
 	~		|
 
-fencing[Intervention,Catchment]=(COMPACTNESS * BLOCK SIZE * SQRT(retired land[Intervention\
-		,Catchment]))*DEER FENCING COST*Price Index
-	~	$M
-	~	The geometry rule of thumb (perimeter-only)
-		
-		If a planting area is roughly compact (square-ish / blob), fence length scales like:
-		
-		Square block:
-		
-		Concrete examples (perimeter fencing only):
-		
-		1 ha →  400 m total → 400 m/ha
-		
-		4 ha →  800 m total → 200 m/ha
-		
-		10 ha →  1,265 m total → 126 m/ha
-		
-		25 ha →  2,000 m total → 80 m/ha
-		
-		100 ha →  4,000 m total → 40 m/ha
-		
-		That shows the key point: bigger blocks need fewer metres of fence per \
-		hectare.
-	|
-
 COMPACTNESS=1.4
 	~	Dmnl
 	~	Compactness factor:
@@ -334,38 +385,6 @@ COMPACTNESS=1.4
 		
 		k≈2+ for very elongated / fragmented
 	|
-
-slip prone land[Baseline,Catchment]=IF THEN ELSE ( INTERVENE START=0 , MAX ( (INI SLIP LAND\
-		[Catchment]-Planted Land[Baseline,Catchment])*slip likelihood, 0) , MAX ( (INI SLIP LAND\
-		[Catchment]-Planted Land[Baseline,Catchment])*slip likelihood, 0) ) ~~|
-slip prone land[PolesStatusQuo,Catchment]=MAX ( (INI SLIP LAND[Catchment]-Planted Land\
-		[PolesStatusQuo,Catchment
-	]-retired land[PolesStatusQuo,Catchment])*slip likelihood, 0) ~~|
-slip prone land[PolesBestPractice,Catchment]=MAX ( (INI SLIP LAND[Catchment]-Planted Land\
-		[PolesBestPractice,Catchment
-	]-retired land[PolesBestPractice,Catchment])*slip likelihood, 0)
-	~	ha/yr
-	~		|
-
-treatment rate[Baseline,Catchment]=(pole cost[Catchment]*POLE DENSITY*planting rt[Baseline\
-		,Catchment])*PROGRAMME STOP ~~|
-treatment rate[PolesStatusQuo,Catchment]=pole cost[Catchment]*POLE DENSITY*planting rt\
-		[PolesStatusQuo,Catchment]+natives cost[Catchment]*retired land[PolesStatusQuo,Catchment\
-		]+fencing[PolesStatusQuo,Catchment] ~~|
-treatment rate[PolesBestPractice,Catchment]=pole cost[Catchment]*POLE DENSITY*planting rt\
-		[PolesBestPractice,Catchment]+natives cost[Catchment]*retired land[PolesBestPractice\
-		,Catchment]+fencing[PolesBestPractice,Catchment]
-	~	$M/yr
-	~		|
-
-annual soil loss[Baseline,Catchment]=SMOOTH3 (slip prone land[Baseline,Catchment]*TIME STEP\
-		, 3) ~~|
-annual soil loss[PolesStatusQuo,Catchment]=SMOOTH3 (slip prone land[PolesStatusQuo,Catchment\
-		]*TIME STEP, 3) ~~|
-annual soil loss[PolesBestPractice,Catchment]=SMOOTH3 (slip prone land[PolesBestPractice\
-		,Catchment]*TIME STEP, 3)
-	~	ha/yr
-	~		|
 
 PROGRAMME STOP=DELAY FIXED ( 0, 27, 1)
 	~	yr
@@ -382,6 +401,8 @@ SOIL VALUE=5e-06
 		Whenua–Landcare Research’s Rapid assessment of land damage – Cyclone \
 		Gabrielle estimates  300 million tonnes of landslide material and gives an \
 		economic cost of  NZ$1.5b, using a conservative  $5/tonne assumption.
+		
+		Darren De Clerk
 	|
 
 Stocking Units[Intervention,LandClasses,Catchment]= INTEG ((carrying capacity[Intervention\
@@ -464,11 +485,6 @@ end of life replacements[Intervention,Catchment]=SMOOTH3( Planted Land[Intervent
 	~		~	:SUPPLEMENTARY 
 	|
 
-Planted Land[Intervention,Catchment]= INTEG (+ planting rt[Intervention,Catchment],
-		0)
-	~	ha
-	~		|
-
 PLANTING[Catchment]=2e-05
 	~	
 	~	See scenario
@@ -494,27 +510,9 @@ total stock units[Intervention,Catchment]=SUM(Stocking Units[Intervention,LandCl
 		2775748. Total beef = 453919. Total = 3229667.
 	|
 
-Treatment cost[Intervention,Catchment]= INTEG (treatment rate[Intervention,Catchment]\
-		,
-		0)
-	~	$M
-	~	 $2500/ha
-	|
-
-Deaths[Intervention,Catchment]= INTEG (SMOOTH3( REPLACEMENT RATIO*planting rt[Intervention\
-		,Catchment], 5)-Deaths[Intervention,Catchment],
-		0)
-	~	ha
-	~		|
-
 sediment loss rate[Intervention,Catchment]=Slip Erosion[Intervention,Catchment]*SEDIMENT DELIVERY RATIO\
 		-Sediment Deposition[Intervention,Catchment]
 	~	t/yr
-	~		|
-
-Tot Land[Intervention,Catchment]= INTEG (land delta[Intervention,Catchment],
-		INIPASTORALFARMLAND[Catchment])
-	~	ha
 	~		|
 
 Land mgmt working cap= INTEG (Loan Balance-SUM(Treatment cost[Intervention!,Catchment\
@@ -1322,7 +1320,7 @@ REDUCTION FACTOR P=3.4
 		4.8 gets to 70% in Pole Reduction
 	|
 
-Intervention:PolesStatusQuo,PolesBestPractice,Baseline
+Intervention:PolesConventional,PolesBestPractice,Baseline
 	~	
 	~		|
 
@@ -1385,290 +1383,290 @@ TIME STEP  = 0.25
 V300  Do not put anything below this section - it will be ignored
 *SoilCon
 $-1--1--1,0,Arial Narrow|14||0-0-0|-1--1--1|0-64-0|-1--1--1|-1--1--1|96,96,79,2
-10,1,Tot Land,387,372,44,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,2,LAND RETIRE SHARE,1162,137,55,31,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,3,48,132,368,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,4,6,3,100,0,0,22,0,192,0,-1--1--1,,1|(188,368)|
-1,5,6,1,4,0,0,22,0,192,0,-1--1--1,,1|(295,368)|
-11,6,0,241,368,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,7,land delta,241,398,47,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,8,INTERVENE START,700,273,53,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,9,land loss,563,399,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,10,1,9,1,0,0,0,0,192,0,-1--1--1,,1|(505,379)|
-10,11,REDUCTION FACTOR P,2084,144,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,12,Slip Erosion,2121,409,56,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,13,slip likelihood,1568,299,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,14,slip prone land,1580,394,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,1,Tot Land,-750,283,44,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,LAND RETIRE SHARE,25,48,55,31,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,3,48,-1005,279,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,4,6,3,100,0,0,22,0,192,0,-1--1--1,,1|(-948,279)|
+1,5,6,1,4,0,0,22,0,192,0,-1--1--1,,1|(-842,279)|
+11,6,0,-896,279,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,7,land delta,-896,309,47,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,8,INTERVENE START,-437,184,53,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,9,land loss,-574,310,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,10,1,9,1,0,0,0,0,192,0,-1--1--1,,1|(-632,290)|
+10,11,REDUCTION FACTOR P,947,55,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,12,Slip Erosion,984,320,56,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,13,slip likelihood,431,210,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,14,slip prone land,443,305,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,15,13,14,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,16,NOISE SEED,1434,231,55,21,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,16,NOISE SEED,297,142,55,21,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,17,16,13,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,18,Pole Reduction,2193,210,50,20,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,19,48,2017,206,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,20,22,19,100,0,0,22,0,192,0,-1--1--1,,1|(2049,206)|
-1,21,22,18,4,0,0,22,0,192,0,-1--1--1,,1|(2113,206)|
-11,22,0,2078,206,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,23,marginal reduction p,2078,236,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,24,INI SLIP LAND,701,135,53,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,25,0,524,658,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+10,18,Pole Reduction,1056,121,50,20,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,19,48,880,117,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,20,22,19,100,0,0,22,0,192,0,-1--1--1,,1|(912,117)|
+1,21,22,18,4,0,0,22,0,192,0,-1--1--1,,1|(976,117)|
+11,22,0,941,117,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,23,marginal reduction p,941,147,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,24,INI SLIP LAND,-436,46,53,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,25,0,-613,569,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 +
-12,26,0,1010,457,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+12,26,0,-127,368,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 -
-12,27,0,755,889,23,23,5,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+12,27,0,-382,800,23,23,5,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 -
-1,28,18,23,1,0,0,0,0,192,0,-1--1--1,,1|(2135,270)|
-10,29,LAND RETIRE SHARE,120,885,47,26,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,30,INTERVENE START,-36,865,60,18,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,31,11,22,1,0,0,0,0,192,0,-1--1--1,,1|(2068,175)|
-10,32,land class,171,901,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,33,1,32,1,0,0,0,0,192,0,-1--1--1,,1|(316,670)|
-10,34,Sediment Deposition,2030,563,47,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,35,48,2322,561,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,36,38,35,100,0,0,22,0,192,0,-1--1--1,,1|(2256,561)|
-1,37,38,34,4,0,0,22,0,192,0,-1--1--1,,1|(2132,561)|
-11,38,0,2194,561,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,39,sediment loss rate,2194,591,56,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,40,12,38,1,0,0,0,0,192,0,-1--1--1,,1|(2231,459)|
-10,41,TIME STEP,2030,603,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,42,34,39,1,0,0,0,0,192,0,-1--1--1,,1|(2118,642)|
-10,43,INTERVENE START,1871,351,60,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,44,TIME STEP,2090,270,65,7,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,45,SOIL BULK DENSITY,1787,491,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,46,SEDIMENT DELIVERY RATIO,2253,637,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,47,46,38,1,0,0,0,0,192,0,-1--1--1,,1|(2234,588)|
-10,48,CONSTANT,1672,493,45,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,49,TIME STEP,110,290,52,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,50,soil weight conversion,1742,393,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,28,18,23,1,0,0,0,0,192,0,-1--1--1,,1|(998,181)|
+10,29,LAND RETIRE SHARE,-1017,796,47,26,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,30,INTERVENE START,-1173,776,60,18,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,31,11,22,1,0,0,0,0,192,0,-1--1--1,,1|(931,86)|
+10,32,land class,-966,812,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,33,1,32,1,0,0,0,0,192,0,-1--1--1,,1|(-821,581)|
+10,34,Sediment Deposition,893,474,47,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,35,48,1185,472,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,36,38,35,100,0,0,22,0,192,0,-1--1--1,,1|(1119,472)|
+1,37,38,34,4,0,0,22,0,192,0,-1--1--1,,1|(995,472)|
+11,38,0,1057,472,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,39,sediment loss rate,1057,502,56,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,40,12,38,1,0,0,0,0,192,0,-1--1--1,,1|(1094,370)|
+10,41,TIME STEP,893,514,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,42,34,39,1,0,0,0,0,192,0,-1--1--1,,1|(981,553)|
+10,43,INTERVENE START,734,262,60,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,44,TIME STEP,953,181,65,7,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,45,SOIL BULK DENSITY,650,402,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,46,SEDIMENT DELIVERY RATIO,1116,548,42,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,47,46,38,1,0,0,0,0,192,0,-1--1--1,,1|(1097,499)|
+10,48,CONSTANT,535,404,45,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,49,TIME STEP,-1027,201,52,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,50,soil weight conversion,605,304,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,51,14,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
 1,52,45,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
 1,53,48,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,54,24,14,1,0,0,0,0,192,0,-1--1--1,,1|(1065,296)|
-10,55,retired land,1171,220,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,56,2,55,1,0,0,0,0,192,0,-1--1--1,,1|(1179,184)|
-1,57,8,55,1,0,0,0,0,192,0,-1--1--1,,1|(848,197)|
-10,58,TIME STEP,2030,603,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,54,24,14,1,0,0,0,0,192,0,-1--1--1,,1|(-72,207)|
+10,55,retired land,34,131,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,56,2,55,1,0,0,0,0,192,0,-1--1--1,,1|(42,95)|
+1,57,8,55,1,0,0,0,0,192,0,-1--1--1,,1|(-289,108)|
+10,58,TIME STEP,893,514,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,59,58,34,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,60,TIME STEP,2121,449,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,60,TIME STEP,984,360,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,61,60,12,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,62,24,55,1,0,0,0,0,192,0,-1--1--1,,1|(955,212)|
-10,63,TIME STEP,69,952,52,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,64,POLE DENSITY,1794,1010,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,65,POLE PRICE,1958,1005,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,66,Treatment cost,1519,1060,42,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,67,48,1744,1058,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,68,70,67,100,0,0,22,0,192,0,-1--1--1,,1|(1693,1058)|
-1,69,70,66,4,0,0,22,0,192,0,-1--1--1,,1|(1601,1058)|
-11,70,0,1647,1058,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,71,treatment rate,1647,1088,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,72,INTERVENE START,2168,962,47,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,73,NATIVES,2013,1152,68,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,74,DEER FENCING COST,1997,908,59,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,75,Native Reduction,1954,191,42,28,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,76,48,1738,188,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,77,79,76,100,0,0,22,0,192,0,-1--1--1,,1|(1786,188)|
-1,78,79,75,4,0,0,22,0,192,0,-1--1--1,,1|(1874,188)|
-11,79,0,1830,188,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,80,marginal reduction n,1830,224,46,28,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,81,REDUCTION FACTOR N,1795,133,55,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,82,75,80,1,0,0,0,0,64,0,-1--1--1,,1|(1895,267)|
+1,62,24,55,1,0,0,0,0,192,0,-1--1--1,,1|(-182,123)|
+10,63,TIME STEP,-1068,863,52,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,64,POLE DENSITY,657,921,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,65,POLE PRICE,821,916,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,66,Treatment cost,382,971,42,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,67,48,607,969,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,68,70,67,100,0,0,22,0,192,0,-1--1--1,,1|(556,969)|
+1,69,70,66,4,0,0,22,0,192,0,-1--1--1,,1|(464,969)|
+11,70,0,510,969,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,71,treatment rate,510,999,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,72,INTERVENE START,1031,873,47,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,73,NATIVES,876,1063,68,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,74,DEER FENCING COST,860,819,59,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,75,Native Reduction,817,102,42,28,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,76,48,601,99,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,77,79,76,100,0,0,22,0,192,0,-1--1--1,,1|(649,99)|
+1,78,79,75,4,0,0,22,0,192,0,-1--1--1,,1|(737,99)|
+11,79,0,693,99,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,80,marginal reduction n,693,135,46,28,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,81,REDUCTION FACTOR N,658,44,55,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,82,75,80,1,0,0,0,0,64,0,-1--1--1,,1|(758,178)|
 1,83,81,80,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,84,TIME STEP,1804,231,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,85,NATIVES,1899,1004,86,28,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,86,fencing,1766,916,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,84,TIME STEP,667,142,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,85,NATIVES,762,915,86,28,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,86,fencing,629,827,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,87,74,86,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,88,86,71,1,0,0,0,0,192,0,-1--1--1,,1|(1732,1000)|
-10,89,TIME STEP,1519,1104,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,90,INI TREATED LAND,654,449,43,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,91,end of life replacements,1258,569,59,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,92,pole cost,1833,1082,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,88,86,71,1,0,0,0,0,192,0,-1--1--1,,1|(595,911)|
+10,89,TIME STEP,382,1015,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,90,INI TREATED LAND,-483,360,43,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,91,end of life replacements,121,480,59,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,92,pole cost,696,993,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,93,92,70,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,94,PLANTING,1884,966,46,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,94,PLANTING,747,877,46,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,95,94,92,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
 1,96,65,92,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
 1,97,64,70,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,98,TIME STEP,1285,668,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,99,INI PLANTING RT,991,323,59,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,100,Price Index,2069,1063,46,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,98,TIME STEP,148,579,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,99,INI PLANTING RT,-146,234,59,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,100,Price Index,932,974,46,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,101,100,92,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,102,100,86,1,0,0,0,0,192,0,-1--1--1,,1|(1944,965)|
-12,103,48,2310,1061,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,104,106,103,100,0,0,22,0,192,0,-1--1--1,,1|(2256,1061)|
-1,105,106,100,4,0,0,22,0,192,0,-1--1--1,,1|(2158,1061)|
-11,106,0,2207,1061,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,107,Inflation rt,2207,1091,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,108,Time,1288,676,34,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,109,TIME STEP,1285,668,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,110,TIME STEP,1285,757,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,111,TIME STEP,1285,668,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,112,Stocking Units,374,1125,61,27,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,113,48,140,1127,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,114,116,113,100,0,0,22,0,192,0,-1--1--1,,1|(187,1127)|
-1,115,116,112,4,0,0,22,0,192,0,-1--1--1,,1|(275,1127)|
-11,116,0,231,1127,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,117,carrying capacity,231,1157,56,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,118,total stock units,550,1128,48,21,8,3,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|14|B|0-0-0,0,0,0,0,0,0
+1,102,100,86,1,0,0,0,0,192,0,-1--1--1,,1|(807,876)|
+12,103,48,1173,972,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,104,106,103,100,0,0,22,0,192,0,-1--1--1,,1|(1119,972)|
+1,105,106,100,4,0,0,22,0,192,0,-1--1--1,,1|(1021,972)|
+11,106,0,1070,972,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,107,Inflation rt,1070,1002,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,108,Time,151,587,34,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,109,TIME STEP,148,579,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,110,TIME STEP,148,668,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,111,TIME STEP,148,579,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,112,Stocking Units,-763,1036,61,27,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,113,48,-997,1038,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,114,116,113,100,0,0,22,0,192,0,-1--1--1,,1|(-949,1038)|
+1,115,116,112,4,0,0,22,0,192,0,-1--1--1,,1|(-862,1038)|
+11,116,0,-906,1038,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,117,carrying capacity,-906,1068,56,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,118,total stock units,-587,1039,48,21,8,3,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|14|B|0-0-0,0,0,0,0,0,0
 1,119,112,118,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,120,stock revenue,929,1005,39,21,8,3,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|14|B|0-0-0,0,0,0,0,0,0
-1,121,118,120,1,0,0,0,0,192,0,-1--1--1,,1|(740,1093)|
-10,122,STOCK UNIT PRICE,848,1125,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,123,122,120,1,0,0,0,0,192,0,-1--1--1,,1|(891,1098)|
-10,124,adjusted gross margin,1149,903,44,32,8,3,0,58,-1,1,0,0,0-0-0,0-0-0,Arial|14|B|0-0-0,0,0,0,0,0,0
-1,125,120,124,1,0,0,0,0,192,0,-1--1--1,,1|(1062,963)|
-10,126,Time,1103,696,28,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,127,TIME STEP,1290,420,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,128,TIME STEP,1285,668,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,129,TIME STEP,1335,661,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,130,Planted Land,1302,415,55,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,131,48,1020,416,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,132,134,131,100,0,0,22,0,192,0,-1--1--1,,1|(1082,416)|
-1,133,134,130,4,0,0,22,0,192,0,-1--1--1,,1|(1196,416)|
-11,134,0,1140,416,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,135,planting rt,1140,446,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,136,99,135,1,0,0,0,0,64,0,-1--1--1,,1|(1015,372)|
-1,137,135,70,1,0,0,0,0,192,0,-1--1--1,,1|(1477,765)|
-1,138,8,135,1,0,0,0,0,64,0,-1--1--1,,1|(892,375)|
-1,139,130,135,1,0,0,0,0,64,0,-1--1--1,,1|(1264,498)|
-1,140,24,135,1,0,0,0,0,64,0,-1--1--1,,1|(870,331)|
-10,141,Deaths,880,428,49,23,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,142,REPLACEMENT RATIO,864,544,69,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,120,stock revenue,-208,916,39,21,8,3,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|14|B|0-0-0,0,0,0,0,0,0
+1,121,118,120,1,0,0,0,0,192,0,-1--1--1,,1|(-397,1004)|
+10,122,STOCK UNIT PRICE,-289,1036,47,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,123,122,120,1,0,0,0,0,192,0,-1--1--1,,1|(-246,1009)|
+10,124,adjusted gross margin,12,814,44,32,8,3,0,58,-1,1,0,0,0-0-0,0-0-0,Arial|14|B|0-0-0,0,0,0,0,0,0
+1,125,120,124,1,0,0,0,0,192,0,-1--1--1,,1|(-75,874)|
+10,126,Time,-34,607,28,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,127,TIME STEP,153,331,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,128,TIME STEP,148,579,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,129,TIME STEP,198,572,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,130,Planted Land,165,326,55,22,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,131,48,-117,327,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,132,134,131,100,0,0,22,0,192,0,-1--1--1,,1|(-55,327)|
+1,133,134,130,4,0,0,22,0,192,0,-1--1--1,,1|(59,327)|
+11,134,0,3,327,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,135,planting rt,3,357,42,22,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,136,99,135,1,0,0,0,0,64,0,-1--1--1,,1|(-122,283)|
+1,137,135,70,1,0,0,0,0,192,0,-1--1--1,,1|(340,676)|
+1,138,8,135,1,0,0,0,0,64,0,-1--1--1,,1|(-245,286)|
+1,139,130,135,1,0,0,0,0,64,0,-1--1--1,,1|(127,409)|
+1,140,24,135,1,0,0,0,0,64,0,-1--1--1,,1|(-267,242)|
+10,141,Deaths,-257,339,49,23,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,142,REPLACEMENT RATIO,-273,455,69,28,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,143,142,141,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,144,141,134,1,0,0,0,0,192,0,-1--1--1,,1|(1007,362)|
-1,145,135,141,1,0,0,0,0,192,0,-1--1--1,,1|(970,518)|
-12,146,0,1229,464,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+1,144,141,134,1,0,0,0,0,192,0,-1--1--1,,1|(-130,273)|
+1,145,135,141,1,0,0,0,0,192,0,-1--1--1,,1|(-167,429)|
+12,146,0,92,375,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 -
-12,147,0,1964,77,145,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
+12,147,0,827,-12,145,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
 Erosion sub-module
-12,148,0,968,107,97,52,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
+12,148,0,-169,18,97,52,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
 Intervention area sub-module
-12,149,0,378,873,85,54,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
+12,149,0,-759,784,85,54,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
 Stock sub-module
-12,150,0,1907,787,118,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
+12,150,0,770,698,118,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
 Intervention cost sub-module
-12,151,0,296,201,89,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
+12,151,0,-841,112,89,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
 Land area sub-module
-10,152,flood area,-141,473,42,15,8,3,1,0,-1,0,0,0,0,0,0,0,0,0
-10,153,FLOOD AREA LOOKUP,2010,748,55,22,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,152,flood area,-1278,384,42,15,8,3,1,0,-1,0,0,0,0,0,0,0,0,0
+10,153,FLOOD AREA LOOKUP,873,659,55,22,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,154,153,152,0,1,0,0,0,0,0,-1--1--1,,1|(0,0)|
-10,155,IND LAND SHARE CHZ,1996,770,51,22,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,156,155,152,1,1,0,0,0,0,0,-1--1--1,,1|(1919,661)|
-10,157,sig WL,2024,792,33,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,155,IND LAND SHARE CHZ,859,681,51,22,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,156,155,152,1,1,0,0,0,0,0,-1--1--1,,1|(782,572)|
+10,157,sig WL,887,703,33,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,158,157,152,0,1,0,0,0,0,0,-1--1--1,,1|(0,0)|
-10,159,SIG WL2,1982,814,40,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,159,SIG WL2,845,725,40,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,160,159,152,0,1,0,0,0,0,0,-1--1--1,,1|(0,0)|
 1,161,130,14,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,162,55,14,1,0,0,0,0,192,0,-1--1--1,,1|(1267,303)|
-1,163,55,134,1,0,0,0,0,192,0,-1--1--1,,1|(1136,412)|
-1,164,130,91,1,0,0,0,0,192,0,-1--1--1,,1|(1306,541)|
-1,165,142,91,1,0,0,0,0,192,0,-1--1--1,,1|(1039,625)|
-1,166,91,135,1,0,0,0,0,192,0,-1--1--1,,1|(1145,490)|
-10,167,INIPASTORALFARMLAND,465,290,89,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,162,55,14,1,0,0,0,0,192,0,-1--1--1,,1|(130,214)|
+1,163,55,134,1,0,0,0,0,192,0,-1--1--1,,1|(-1,323)|
+1,164,130,91,1,0,0,0,0,192,0,-1--1--1,,1|(169,452)|
+1,165,142,91,1,0,0,0,0,192,0,-1--1--1,,1|(-98,536)|
+1,166,91,135,1,0,0,0,0,192,0,-1--1--1,,1|(8,401)|
+10,167,INIPASTORALFARMLAND,-672,201,89,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,168,167,1,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
 1,169,167,9,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,170,TIME STEP,513,507,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,171,TIME STEP,259,416,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,172,TIME STEP,241,442,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-10,173,annual soil loss,398,636,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,174,14,173,1,0,0,0,0,192,0,-1--1--1,,1|(940,758)|
-1,175,173,7,1,0,0,0,0,192,0,-1--1--1,,1|(295,534)|
-10,176,TIME STEP,430,715,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,177,176,173,1,0,0,0,0,64,0,-1--1--1,,1|(400,684)|
-10,178,TIME STEP,241,442,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,179,24,7,1,0,0,0,0,64,0,-1--1--1,,1|(300,298)|
-1,180,8,7,1,0,0,0,0,64,0,-1--1--1,,1|(368,251)|
-10,181,CLASS SHARE,270,948,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,182,181,32,1,0,0,0,0,192,0,-1--1--1,,1|(206,965)|
-10,183,STOCK ADJUST TIME,375,1047,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,184,183,112,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,185,Delta Stock Revenue,814,947,46,26,3,3,0,56,-1,1,0,0,0-0-0,0-0-0,Arial|11|B|0-0-0,0,0,0,0,0,0
-10,186,stock revenue total,710,1034,63,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,187,120,186,1,0,0,0,0,192,0,-1--1--1,,1|(836,1026)|
-1,188,186,185,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,189,stock revenue prev,601,940,64,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,190,186,189,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,191,TIME STEP,559,1001,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,192,191,189,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,193,189,185,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,194,INICARRYINGCAPACITY,214,1032,52,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,195,66,135,1,0,0,0,0,192,0,-1--1--1,,1|(1255,850)|
-12,196,0,1392,782,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+10,170,TIME STEP,-624,418,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,171,TIME STEP,-878,327,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,172,TIME STEP,-896,353,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,173,annual soil loss,-739,547,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,174,14,173,1,0,0,0,0,192,0,-1--1--1,,1|(-197,669)|
+1,175,173,7,1,0,0,0,0,192,0,-1--1--1,,1|(-842,445)|
+10,176,TIME STEP,-707,626,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,177,176,173,1,0,0,0,0,64,0,-1--1--1,,1|(-737,595)|
+10,178,TIME STEP,-896,353,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,179,CLASS SHARE,-867,859,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,180,179,32,1,0,0,0,0,192,0,-1--1--1,,1|(-931,876)|
+10,181,STOCK ADJUST TIME,-762,958,60,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,182,181,112,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,183,Delta Stock Revenue,-323,858,46,26,3,3,0,56,-1,1,0,0,0-0-0,0-0-0,Arial|11|B|0-0-0,0,0,0,0,0,0
+10,184,stock revenue total,-427,945,63,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,185,120,184,1,0,0,0,0,192,0,-1--1--1,,1|(-301,937)|
+1,186,184,183,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,187,stock revenue prev,-536,851,64,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,188,184,187,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,189,TIME STEP,-578,912,50,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,190,189,187,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,191,187,183,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,192,INICARRYINGCAPACITY,-923,943,52,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,193,66,135,1,0,0,0,0,192,0,-1--1--1,,1|(118,761)|
+12,194,0,255,693,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 -
-1,197,194,116,1,0,0,0,0,192,0,-1--1--1,,1|(197,1089)|
-1,198,32,116,1,0,0,0,0,192,0,-1--1--1,,1|(154,1054)|
-1,199,120,135,1,0,0,0,0,192,0,-1--1--1,,1|(1064,792)|
-1,200,185,135,1,0,0,0,0,64,0,-1--1--1,,1|(1011,727)|
-10,201,total cost,1269,1064,46,26,8,3,0,48,-1,1,0,0,0-0-0,0-0-0,Arial||B|0-0-0,0,0,0,0,0,0
-1,202,66,201,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,203,201,124,1,0,0,0,0,192,0,-1--1--1,,1|(1189,1011)|
-10,204,SOIL VALUE,1732,587,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,205,Sedi Loss Cost,1753,683,52,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,206,204,205,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,207,34,205,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,208,205,201,1,0,0,0,0,192,0,-1--1--1,,1|(1531,902)|
-10,209,PROGRAMME STOP,1493,639,53,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,210,209,135,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,211,209,71,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,212,55,71,1,0,0,0,0,192,0,-1--1--1,,1|(1587,673)|
-10,213,natives cost,1792,1154,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,214,100,213,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,215,73,213,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,216,213,70,1,0,0,0,0,192,0,-1--1--1,,1|(1719,1109)|
-1,217,72,106,1,0,0,0,0,192,0,-1--1--1,,1|(2230,1036)|
-10,218,INI INFLATION,2207,1135,50,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,219,218,107,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,220,72,100,1,0,0,0,0,192,0,-1--1--1,,1|(2145,1015)|
-10,221,COMPACTNESS,1956,856,59,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,222,221,86,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,223,55,86,1,0,0,0,0,64,0,-1--1--1,,1|(1548,559)|
-12,224,0,1575,724,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+1,195,192,116,1,0,0,0,0,192,0,-1--1--1,,1|(-940,1000)|
+1,196,32,116,1,0,0,0,0,192,0,-1--1--1,,1|(-983,965)|
+1,197,120,135,1,0,0,0,0,192,0,-1--1--1,,1|(-73,703)|
+1,198,183,135,1,0,0,0,0,64,0,-1--1--1,,1|(-126,638)|
+10,199,total cost,132,975,46,26,8,3,0,48,-1,1,0,0,0-0-0,0-0-0,Arial||B|0-0-0,0,0,0,0,0,0
+1,200,66,199,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,201,199,124,1,0,0,0,0,192,0,-1--1--1,,1|(52,922)|
+10,202,SOIL VALUE,595,498,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,203,Sedi Loss Cost,616,594,52,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,204,202,203,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,205,34,203,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,206,203,199,1,0,0,0,0,192,0,-1--1--1,,1|(394,813)|
+10,207,PROGRAMME STOP,356,550,53,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,208,207,135,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,209,207,71,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,210,55,71,1,0,0,0,0,192,0,-1--1--1,,1|(450,584)|
+10,211,natives cost,655,1065,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,212,100,211,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,213,73,211,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,214,211,70,1,0,0,0,0,192,0,-1--1--1,,1|(582,1020)|
+1,215,72,106,1,0,0,0,0,192,0,-1--1--1,,1|(1093,947)|
+10,216,INI INFLATION,1070,1046,50,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,217,216,107,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,218,72,100,1,0,0,0,0,192,0,-1--1--1,,1|(1008,926)|
+10,219,COMPACTNESS,819,767,59,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,220,219,86,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,221,55,86,1,0,0,0,0,64,0,-1--1--1,,1|(411,470)|
+12,222,0,438,635,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 -
-10,225,BLOCK SIZE,1816,845,45,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,226,225,86,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-10,227,Sediment Reduction,1880,567,46,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,228,34,227,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,229,Erosion Reduction,2282,410,54,29,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,230,12,229,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,231,Treated Land,684,551,50,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,232,55,231,1,0,0,0,0,192,0,-1--1--1,,1|(905,322)|
-1,233,231,7,1,0,0,0,0,192,0,-1--1--1,,1|(330,493)|
-1,234,130,231,1,0,0,0,0,192,0,-1--1--1,,1|(971,670)|
-1,235,90,231,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,236,8,231,1,0,0,0,0,192,0,-1--1--1,,1|(713,443)|
-1,237,8,14,1,0,0,0,0,64,0,-1--1--1,,1|(1111,281)|
-1,238,12,205,1,0,0,0,0,192,0,-1--1--1,,1|(2017,662)|
-10,239,REMOVAL,1905,679,38,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,240,239,205,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-12,241,0,1800,625,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+10,223,BLOCK SIZE,679,756,45,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,224,223,86,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,225,Sediment Reduction,743,478,46,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,226,34,225,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,227,Erosion Reduction,1145,321,54,29,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,228,12,227,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,229,Treated Land,-453,462,50,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,230,55,229,1,0,0,0,0,192,0,-1--1--1,,1|(-232,233)|
+1,231,130,229,1,0,0,0,0,192,0,-1--1--1,,1|(-166,581)|
+1,232,90,229,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,233,8,229,1,0,0,0,0,192,0,-1--1--1,,1|(-424,354)|
+1,234,8,14,1,0,0,0,0,64,0,-1--1--1,,1|(-26,192)|
+1,235,12,203,1,0,0,0,0,192,0,-1--1--1,,1|(880,573)|
+10,236,REMOVAL,768,590,38,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,237,236,203,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+12,238,0,663,536,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 +
-12,242,48,1848,410,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,243,245,242,100,0,0,22,0,192,0,-1--1--1,,1|(1906,410)|
-1,244,245,12,4,0,0,22,0,192,0,-1--1--1,,1|(2016,410)|
-11,245,0,1961,410,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,246,slip rate,1961,444,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,247,12,246,1,0,0,0,0,64,0,-1--1--1,,1|(2054,483)|
-1,248,43,245,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,249,50,245,1,0,0,0,0,192,0,-1--1--1,,1|(1867,416)|
-10,250,tree reduction,2027,334,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,251,75,250,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,252,18,250,1,0,0,0,0,192,0,-1--1--1,,1|(2140,293)|
-1,253,2,250,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,254,43,250,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,255,250,245,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,256,Storm Prob,1577,101,46,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,257,48,1292,99,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,258,260,257,100,0,0,22,0,192,0,-1--1--1,,1|(1356,99)|
-1,259,260,256,4,0,0,22,0,192,0,-1--1--1,,1|(1476,99)|
-11,260,0,1416,99,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,261,thermal expansion,1416,133,61,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,262,ICE MELT,1335,26,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,263,RCP,1480,9,53,26,8,3,0,0,-1,1,0,0,0,0,0,0,0,0
-1,264,262,260,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,265,263,256,1,0,0,0,0,192,0,-1--1--1,,1|(1568,41)|
-1,266,256,260,1,0,0,0,0,192,0,-1--1--1,,1|(1492,192)|
-1,267,262,256,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
-1,268,256,13,1,0,0,0,0,192,0,-1--1--1,,1|(1591,202)|
-12,269,0,1455,-18,145,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
+12,239,48,711,321,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,240,242,239,100,0,0,22,0,192,0,-1--1--1,,1|(769,321)|
+1,241,242,12,4,0,0,22,0,192,0,-1--1--1,,1|(879,321)|
+11,242,0,824,321,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,243,slip rate,824,355,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,244,12,243,1,0,0,0,0,64,0,-1--1--1,,1|(917,394)|
+1,245,43,242,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,246,50,242,1,0,0,0,0,192,0,-1--1--1,,1|(730,327)|
+10,247,tree reduction,890,245,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,248,75,247,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,249,18,247,1,0,0,0,0,192,0,-1--1--1,,1|(1003,204)|
+1,250,2,247,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,251,43,247,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,252,247,242,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,253,Storm Prob,440,12,46,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,254,48,155,10,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,255,257,254,100,0,0,22,0,192,0,-1--1--1,,1|(219,10)|
+1,256,257,253,4,0,0,22,0,192,0,-1--1--1,,1|(339,10)|
+11,257,0,279,10,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,258,thermal expansion,279,44,61,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,259,ICE MELT,198,-63,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,260,RCP,343,-80,53,26,8,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,261,259,257,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,262,260,253,1,0,0,0,0,192,0,-1--1--1,,1|(431,-48)|
+1,263,253,257,1,0,0,0,0,192,0,-1--1--1,,1|(355,103)|
+1,264,259,253,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+1,265,253,13,1,0,0,0,0,192,0,-1--1--1,,1|(454,113)|
+12,266,0,318,-107,145,48,8,7,0,58,-1,0,0,0,0-0-0,0-0-0,Arial|16|BI|0-128-128,0,0,0,0,0,0
 Climate sub-module
-12,270,0,1498,150,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
+12,267,0,361,61,23,23,4,7,0,59,-1,0,0,0,255-0-0,0-0-0,Arial|20||0-0-0,0,0,0,0,0,0
 +
+1,268,24,7,1,0,0,0,0,64,0,-1--1--1,,1|(-719,108)|
+1,269,8,7,1,0,0,0,0,64,0,-1--1--1,,1|(-714,142)|
+1,270,229,7,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 \\\---/// Sketch information - do not modify anything except names
 V300  Do not put anything below this section - it will be ignored
 *Risk
@@ -1966,7 +1964,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 :L<%^E!@
 1:Current.vdfx
 4:Time
-5:INI TREATED LAND[Catchment]
+5:Sedi Loss Cost[Intervention,Catchment]
 6:Baseline
 6:CLASS3
 6:DReg1
@@ -1992,7 +1990,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 6:PastoralFarming
 6:PlantationForests
 6:PolesBestPractice
-6:PolesStatusQuo
+6:PolesConventional
 6:RegionalTotal
 6:SpecialistLivestock
 6:SReg1
