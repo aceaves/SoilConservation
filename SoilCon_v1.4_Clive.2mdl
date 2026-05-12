@@ -45,10 +45,9 @@ annual cost ha[Intervention,Catchment]=IF THEN ELSE(
 	~	Validate to $60 - 70k per ha.
 	|
 
-INI NATURAL SLIPS=6767
+INI NATURAL SLIPS=1522
 	~	ha
-	~	Taken from SoilCon FME workbench. Inverse of INI SLIP LAND. This value is \
-		for 6 & 7 land only.
+	~	Taken from SoilCon FME workbench. Inverse of INI SLIP LAND.
 	|
 
 slip prone land[Baseline,Catchment]=IF THEN ELSE ( INTERVENE START=0 , MAX ( (INI SLIP LAND\
@@ -641,13 +640,13 @@ PLANTING[Catchment]=2e-05
 	~	See scenario
 	|
 
-INI SLIP LAND[RegionalTotal]=2322 ~~|
+INI SLIP LAND[RegionalTotal]=5000 ~~|
 INI SLIP LAND[Moeangiangi]=356 ~~|
 INI SLIP LAND[Hawea]=217 ~~|
 INI SLIP LAND[Tahaenui]=731
 	~	ha
 	~	See Miro table for 6 & 7 land. Model starts with "Without Mature \
-		Treatment". This is for the selection of just the Ngaruroro and the Karamu.
+		Treatment".
 	|
 
 total stock units[Intervention,Catchment]=SUM(Stocking Units[Intervention,LandClasses\
@@ -1499,7 +1498,7 @@ Industries:
 		Simulation Control Parameters
 	|
 
-FINAL TIME  = 50
+FINAL TIME  = 40
 	~	Year
 	~	The final time for the simulation.
 	|
@@ -1510,7 +1509,7 @@ INITIAL TIME  = 0
 	|
 
 SAVEPER  = 
-        TIME STEP 
+        TIME STEP
 	~	Year [0,?]
 	~	The frequency with which output is stored.
 	|
@@ -2121,7 +2120,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 :L<%^E!@
 1:Clive.vdfx
 4:Time
-5:INI SLIP LAND[Catchment]
+5:dredging[Intervention,Catchment]
 6:Baseline
 6:CLASS3
 6:DReg1
@@ -2146,6 +2145,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 6:LUC8
 6:PastoralFarming
 6:PlantationForests
+6:PolesBestPractice
 6:PolesConventional
 6:RegionalTotal
 6:SpecialistLivestock
@@ -2153,8 +2153,8 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 9:Clive
 19:71,0
 24:0
-25:50
-26:50
+25:40
+26:40
 8:MfE Graphs.vgd
 30:?basedata=BaseData.xls
 30:?scenariodata=ScenarioData.xls
