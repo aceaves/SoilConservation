@@ -1,14 +1,14 @@
-The total payoff is	1.26081e+06
-   Policy elements	1.26081e+06
+The total payoff is	1.15977e+06
+   Policy elements	1.15977e+06
    Calibration elements	0
    Prior elements	0
 
 The following are the components of the payoff:
 Type	Component	Contribution	Percent	Values	Params&Data	Used	Skipped
-*P	adjusted gross margin[PolesBestPractice,RegionalTotal]/1	1.00905e+06	NA	1.00905e+06	0	161	0
-*P	adjusted gross margin[Baseline,RegionalTotal]/1	832513	NA	832513	0	161	0
-*P	adjusted gross margin[Baseline,Tahaenui]/1	-307961	NA	-307961	0	161	0
-*P	adjusted gross margin[PolesBestPractice,Tahaenui]/1	-272797	NA	-272797	0	161	0
+*P	adjusted gross margin[PolesBestPractice,RegionalTotal]/1	991241	NA	991241	0	161	0
+*P	adjusted gross margin[Baseline,RegionalTotal]/1	776494	NA	776494	0	161	0
+*P	adjusted gross margin[Baseline,Tahaenui]/1	-323887	NA	-323887	0	161	0
+*P	adjusted gross margin[PolesBestPractice,Tahaenui]/1	-284083	NA	-284083	0	161	0
 
 Sources for exogenous variables
 INICARRYINGCAPACITY[CLASS3]	BaseData.xls.vdfx
