@@ -36,7 +36,7 @@ plate rate[Intervention,Catchment]=(Soil Deposition[Intervention,Catchment] - Dr
 	~	mm/yr
 	~		|
 
-INI=200
+INI=350
 	~	ha/yr
 	~	450 was the starting value
 	|
@@ -248,14 +248,15 @@ area=96000
 	~	m
 	~		|
 
-Clive removal share=0.1
+Clive removal share=0.007
 	~	pcnt
 	~	10% of sediment ends up in the Clive and dredged every 10 years?
 		
 		0.007 works
 	|
 
-soil value cost[Intervention,Catchment]=Slip Erosion[Intervention,Catchment]*SOIL VALUE
+soil value cost[Intervention,Catchment]=SMOOTH(Slip Erosion[Intervention,Catchment]*SOIL VALUE\
+		, 1)
 	~	$M
 	~		|
 
@@ -2222,7 +2223,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 :L<%^E!@
 1:Clive.vdfx
 4:Time
-5:Clive removal share
+5:REMOVAL[Intervention,Catchment]
 6:Baseline
 6:CLASS3
 6:DReg1
