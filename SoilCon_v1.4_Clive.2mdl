@@ -1,4 +1,9 @@
 {UTF-8}
+annual sediment reduction[Intervention,Catchment]=sediment loss rate[Baseline,Catchment\
+		] - sediment loss rate[PolesConventional,Catchment]
+	~	t/yr
+	~		|
+
 REMOVAL[Intervention,Catchment]=IF THEN ELSE (INTERVENE START=0, 1.2e-05 , 2.4e-05 )
 	~	$M/t
 	~	https://hawkesbay.infocouncil.biz/Open/2020/10/RC_28102020_AGN_AT_SUP.htm
@@ -36,9 +41,11 @@ plate rate[Intervention,Catchment]=(Soil Deposition[Intervention,Catchment] - Dr
 	~	mm/yr
 	~		|
 
-INI=200
+INI=241
 	~	ha/yr
 	~	450 was the starting value
+		
+		350 for the report.
 	|
 
 dredging active=IF THEN ELSE(
@@ -248,14 +255,15 @@ area=96000
 	~	m
 	~		|
 
-Clive removal share=0.1
+Clive removal share=0.007
 	~	pcnt
 	~	10% of sediment ends up in the Clive and dredged every 10 years?
 		
 		0.007 works
 	|
 
-soil value cost[Intervention,Catchment]=Slip Erosion[Intervention,Catchment]*SOIL VALUE
+soil value cost[Intervention,Catchment]=SMOOTH(Slip Erosion[Intervention,Catchment]*SOIL VALUE\
+		, 1)
 	~	$M
 	~		|
 
@@ -1553,7 +1561,7 @@ Industries:
 		Simulation Control Parameters
 	|
 
-FINAL TIME  = 40
+FINAL TIME  = 90
 	~	Year
 	~	The final time for the simulation.
 	|
@@ -1925,6 +1933,8 @@ Climate sub-module
 10,331,TIME STEP,1363,920,50,12,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,332,100,290,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
 1,333,8,227,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,334,annual sediment reduction,1717,523,55,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,335,38,334,1,0,0,0,0,192,0,-1--1--1,,1|(1860,546)|
 \\\---/// Sketch information - do not modify anything except names
 V300  Do not put anything below this section - it will be ignored
 *Risk
@@ -2222,7 +2232,7 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 :L<%^E!@
 1:Clive.vdfx
 4:Time
-5:Clive removal share
+5:annual sediment reduction[Intervention,Catchment]
 6:Baseline
 6:CLASS3
 6:DReg1
@@ -2254,8 +2264,8 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|128-128-0|-1--1--1|-1--1--1|96,96,5,2
 9:Clive
 19:71,0
 24:0
-25:40
-26:40
+25:90
+26:90
 30:?basedata=BaseData.xls
 30:?scenariodata=ScenarioData.xls
 11:Optimise_AdjustedGrossMargin.voc
